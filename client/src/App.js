@@ -1,7 +1,9 @@
+import { Board } from "./features/kanbanBoard"
+
 function App() {
   return (
     <div className="App">
-      App
+      <Board />
     </div>
   )
 }
