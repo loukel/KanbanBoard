@@ -2,8 +2,8 @@ const express = require('express')
 const router = express.Router()
 const itemController = require('../controllers/itemController')
 
-router.put('/', itemController.updateItems)
+router.put('/', itemController.update_items)
 // router.post('/')
-router.put('/:id', itemController.updateItem)
+router.put('/:id', itemController.update_item)
 
 module.exports = router
