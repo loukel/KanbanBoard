@@ -3,7 +3,7 @@ import { Card } from 'react-bootstrap'
 import TextareaAutosize from 'react-textarea-autosize'
 import ColumnOptions from './ColumnOptions'
 import { Draggable } from 'react-beautiful-dnd'
-import { updateColumn } from '@/api'
+import { updateColumn } from '@/services/columnApi'
 import ColumnBody from './ColumnBody'
 
 const BoardColumn = ({ items, heading, id, deleteColumn, index: columnIndex }) => {

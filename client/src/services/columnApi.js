@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { baseUrl } from '../constants'
 
-const getAllColumns = () => {
+const getAllColumns = async () => {
   try {
     const res = await axios({
       method: 'GET',
@@ -15,7 +15,7 @@ const getAllColumns = () => {
   }
 }
 
-const updateColumns = (data) => {
+const updateColumns = async (data) => {
   try {
     const res = await axios({
       method: 'PUT',
@@ -30,7 +30,7 @@ const updateColumns = (data) => {
   }
 }
 
-const updateColumn = (id, data) => {
+const updateColumn = async (id, data) => {
   try {
     const res = await axios({
       method: 'PUT',

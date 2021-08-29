@@ -2,11 +2,12 @@ import { useState } from 'react'
 import BoardColumn from './BoardColumn'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { reorder, move } from '@/utils/linkedList'
-import { Row, Button } from 'react-bootstrap'
-import { updateItems, createColumn, destroyColumn, updateColumns } from '@/api'
+import { Row } from 'react-bootstrap'
+import { getAllColumns, updateColumns } from '@/services/columnApi'
+import { updateItems } from '@/services/itemApi'
 
 export const Board = () => {
-  const [lists, setLists] = useState({})
+  const [lists, setLists] = useState([])
   const [loading, setLoading] = useState(false)
 
   // Fetch-then-render columns
@@ -110,23 +111,6 @@ export const Board = () => {
     }
   }
 
-  const addColumn = async () => {
-    const newColumn = await createColumn()
-    const listsClone = [...lists]
-    listsClone.push(newColumn)
-    setLists(listsClone)
-  }
-
-  const deleteColumn = async (id) => {
-    const index = lists.findIndex(column => column.id === id)
-    if (lists[index].items.length === 0 && !lists[index].default) {
-      await destroyColumn(id)
-
-      const listsClone = [...lists.filter(column => column.id !== id)]
-      setLists(listsClone)
-    }
-  }
-
   return (
     <Row className='flex-row ml-3 mb-3 pb-2 mr-0 px-2 board flex-nowrap align-items-start'>
       <DragDropContext onDragEnd={onDragEnd} isDragDisabled={loading}>
@@ -147,7 +131,6 @@ export const Board = () => {
                   items={column.items}
                   id={column.id}
                   heading={column.name}
-                  deleteColumn={deleteColumn}
                   index={index}
                 />
               )}
@@ -155,9 +138,6 @@ export const Board = () => {
             </div>
           )}
         </Droppable>
-        <Button className='add-label' onClick={addColumn}>
-          <h5>Add a New Column</h5>
-        </Button>
       </DragDropContext>
     </Row>
   )
