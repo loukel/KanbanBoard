@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import BoardColumn from './BoardColumn'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { reorder, move } from '@/utils/linkedList'
@@ -11,6 +11,12 @@ export const Board = () => {
   const [loading, setLoading] = useState(false)
 
   // Fetch-then-render columns
+  useEffect(async () => {
+    setLoading(true)
+    const columns = await getAllColumns()
+    setLists(columns)
+    setLoading(false)
+  }, [])
 
   /**
    * Occurs where a drag operation is finished.
