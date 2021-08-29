@@ -8,16 +8,16 @@ generator client {
 }
 
 model Column {
-  id String @id @default(cuid())
-  name String
+  id     String  @id @default(cuid())
+  name   String
   nextId String?
-  items Item[]
+  items  Item[]
 }
 
 model Item {
-  id String @id @default(cuid())
+  id       String  @id @default(cuid())
   columnId String
-  name String
-  nextId String?
-  column Column @relation(fields: [columnId], references: [id])
+  name     String
+  nextId   String?
+  column   Column  @relation(fields: [columnId], references: [id])
 }

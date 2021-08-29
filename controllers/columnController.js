@@ -4,7 +4,21 @@ const prisma = new PrismaClient()
 
 const get_columns = async (req, res) => {
   try {
-    const columns = await prisma.column.findMany()
+    let columns = await prisma.column.findMany({
+      include: {
+        items: true,
+      },
+    })
+
+    // Order columns
+    columns = orderLinkedList(columns)
+
+    // Order items in each column
+    columns = columns.map(column => {
+      column.items = orderLinkedList(column.items)
+      return column
+    })
+
     res.status(200).send(columns)
   } catch (error) {
     console.error(error)
