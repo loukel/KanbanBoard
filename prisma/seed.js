@@ -8,22 +8,22 @@ const columnsNum = 5
 const itemsPerColumn = 10
 
 const main = async () => {
-  let prevColumnId = null
+  let prevColumn = null
   for (let i = 0; i < columnsNum; i++) {
-    const column = { id: prevColumnId } = await prisma.column.create({
+    const column = prevColumn = await prisma.column.create({
       data: {
         name: faker.lorem.words(),
-        nextId: prevColumnId,
+        nextId: prevColumn?.id || null,
       }
     })
 
-    let prevItemId = null
+    let prevItem = null
     for (let j = 0; j < itemsPerColumn; j++) {
-      const item = { id: prevItemId } = await prisma.item.create({
+      const item = prevItem = await prisma.item.create({
         data: {
           name: faker.lorem.words(),
           columnId: column.id,
-          nextId: prevItemId,
+          nextId: prevItem?.id || null,
         }
       })
       prevColumnId = item.id
