@@ -1,51 +1,59 @@
-import { PrismaClient } from '@prisma/client'
+const { PrismaClient } = require('@prisma/client')
+const orderLinkedList = require('../utils/linkedList')
 const prisma = new PrismaClient()
 
-const errorHandler = async (callback) => {
-  return () => {
-    try {
-      return await callback()
-    } catch (error) {
-      console.error(error)
-      res.sendStatus(500)
-    }
+const get_columns = async (req, res) => {
+  try {
+    const columns = await prisma.column.findMany()
+    res.status(200).send(columns)
+  } catch (error) {
+    console.error(error)
+    res.sendStatus(500)
   }
 }
 
-const get_columns = errorHandler(async (req, res) => {
-  const columns = await prisma.column.findMany()
-  res.status(200).send(columns)
-})
-
-const update_columns = errorHandler(async (req, res) => {
+const update_columns = async (req, res) => {
   const data = req.body
-  let queries = []
-  data.forEach(update => {
-    const id = update.id
 
-    const data = {
-      nextId: update.nextId,
-    }
+  try {
+    let queries = []
+    data.forEach(update => {
+      const id = update.id
 
-    const query = prisma.state.updateMany({
-      where: {
-        id
-      },
+      const data = {
+        nextId: update.nextId,
+      }
+
+      const query = prisma.state.updateMany({
+        where: {
+          id
+        },
+        data
+      })
+
+      queries.push(query)
+    })
+    await prisma.$transaction(queries)
+  } catch (error) {
+    console.error(error)
+    res.sendStatus(500)
+  }
+
+}
+
+const update_column = async (req, res) => {
+  const data = req.body
+
+  try {
+    await prisma.column.update({
       data
     })
-
-    queries.push(query)
-  })
-  await prisma.$transaction(queries)
-})
-
-const update_column = errorHandler(async (req, res) => {
-  const data = req.body
-  await prisma.column.update({
-    data
-  })
-  res.sendStatus(204)
-})
+    res.sendStatus(204)
+  } catch (error) {
+    console.error(error)
+    res.sendStatus(500)
+  }
+}
 
 module.exports = {
   get_columns,
