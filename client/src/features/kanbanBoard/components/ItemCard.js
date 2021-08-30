@@ -13,10 +13,8 @@ const ItemCard = ({ item, index }) => {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
           >
-            <Card className='bg-primary text-white d-flex p-3 mb-2 project-card'>
+            <Card className='bg-primary text-white d-flex p-4 mb-2 project-card'>
               <span className='h5'>{item.name}</span>
-              <span className='h6'>id: {item.id}</span>
-              <span className='h6'>nextId: {item.nextId}</span>
             </Card>
           </div>
         )}

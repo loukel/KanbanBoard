@@ -42,12 +42,6 @@ const ColumnOptions = ({ deleteColumn, label, empty, toggleColumn, hidden, edit 
             </Button>
             <Button variant='light' className='w-100 py-1' onClick={() => {
               setShowOptions(false)
-              toggleColumn()
-            }}>
-              {hidden ? 'Unhide' : 'Hide'}
-            </Button>
-            <Button variant='light' className='w-100 py-1' onClick={() => {
-              setShowOptions(false)
               empty
                 ? setShowConfirmation(true)
                 : setShowWarning(true)
