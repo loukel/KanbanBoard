@@ -111,11 +111,11 @@ export const move = (source, destination, droppableSource, droppableDestination)
     })
   }
 
-  // Update the item being moved with the new stateId and nextId
+  // Update the item being moved with the new columnId and nextId
   const insertion = [
     {
       id: source[droppableSource.index].id,
-      stateId: droppableDestination.droppableId,
+      columnId: droppableDestination.droppableId,
       nextId: destination[droppableDestination.index]?.id || null
     }
   ]

@@ -1,0 +1,83 @@
+// import Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+.board-column {
+  max-width: 280px !important;
+
+  .card-body {
+    min-height: 680px !important;
+    max-height: 680px !important;
+    overflow-y: auto;
+  }
+}
+
+.project-card {
+  user-select: none;
+}
+
+.project-card span {
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  line-height: normal;
+}
+
+.project-card:hover {
+  cursor: pointer;
+}
+
+.board {
+  overflow-x: auto;
+  overflow-y: none;
+}
+
+.board-column,
+.add-label {
+  min-width: 280px !important;
+  max-width: 280px !important;
+}
+
+.add-label {
+  height: fit-content;
+}
+
+.label {
+  border: none !important;
+  outline: none !important;
+
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+
+  resize: none;
+  /*remove the resize handle on the bottom right*/
+
+  background-color: transparent;
+
+  overflow: hidden;
+}
+
+.board-close {
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 12px;
+}
+
+.label-actions {
+  width: 150px;
+}
+
+.label-actions button {
+  background: white;
+}
+
+.label-actions .close {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+}
+
+.board-column .card-body {
+  min-height: 70vh;
+}

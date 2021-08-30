@@ -15,6 +15,8 @@ const ItemCard = ({ item, index }) => {
           >
             <Card className='bg-primary text-white d-flex p-3 mb-2 project-card'>
               <span className='h5'>{item.name}</span>
+              <span className='h6'>id: {item.id}</span>
+              <span className='h6'>nextId: {item.nextId}</span>
             </Card>
           </div>
         )}

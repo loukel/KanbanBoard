@@ -1,9 +1,14 @@
-import { Board } from "./features/kanbanBoard"
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { KanbanBoard } from "./features/kanbanBoard"
 
 function App() {
   return (
     <div className="App">
-      <Board />
+      <Router>
+        <Switch>
+          <Route path="/*" component={KanbanBoard}/>
+        </Switch>
+      </Router>
     </div>
   )
 }

@@ -1,1 +1,1 @@
-export { Board } from './components/Board'
+export { KanbanBoard } from './routes/KanbanBoard'

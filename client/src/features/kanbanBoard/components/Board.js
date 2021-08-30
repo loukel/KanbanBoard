@@ -1,22 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import BoardColumn from './BoardColumn'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { reorder, move } from '@/utils/linkedList'
 import { Row } from 'react-bootstrap'
-import { getAllColumns, updateColumns } from '@/services/columnApi'
+import { updateColumns } from '@/services/columnApi'
 import { updateItems } from '@/services/itemApi'
 
-export const Board = () => {
-  const [lists, setLists] = useState([])
+export const Board = ({ columns }) => {
+  const [lists, setLists] = useState(columns)
   const [loading, setLoading] = useState(false)
-
-  // Fetch-then-render columns
-  useEffect(async () => {
-    setLoading(true)
-    const columns = await getAllColumns()
-    setLists(columns)
-    setLoading(false)
-  }, [])
 
   /**
    * Occurs where a drag operation is finished.
@@ -54,7 +46,7 @@ export const Board = () => {
   const moveWithinList = async (source, destination) => {
     const [list] = lists.filter(column => column.id === source.droppableId)
     const [items, data] = reorder(
-      list.projects,
+      list.items,
       source.index,
       destination.index
     )
@@ -65,7 +57,6 @@ export const Board = () => {
     listsClone[columnIndex] = list
 
     const res = await updateItems(data)
-
     if (res === 'OK') {
       setLists(listsClone)
     }
@@ -85,8 +76,8 @@ export const Board = () => {
     const listsClone = [...lists]
 
     // Update list clone to have the new columns
-    sourceList.projects = result[source.droppableId]
-    destinationList.projects = result[destination.droppableId]
+    sourceList.items = result[source.droppableId]
+    destinationList.items = result[destination.droppableId]
 
     const sourceIndex = lists.findIndex(column => column.id === source.droppableId)
     const destinationIndex = lists.findIndex(column => column.id === destination.droppableId)
@@ -95,6 +86,7 @@ export const Board = () => {
     listsClone[destinationIndex] = destinationList
 
     const res = await updateItems(data)
+
     if (res === 'OK') {
       setLists(listsClone)
     }
@@ -111,6 +103,7 @@ export const Board = () => {
     setLists(items)
 
     const res = await updateColumns(data)
+    console.log(data)
 
     if (res !== 'OK') {
       setLists(oldLists)
