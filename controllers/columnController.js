@@ -39,7 +39,7 @@ const update_columns = async (req, res) => {
         nextId: update.nextId,
       }
 
-      const query = prisma.state.updateMany({
+      const query = prisma.column.update({
         where: {
           id
         },

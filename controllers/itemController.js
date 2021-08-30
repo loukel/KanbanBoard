@@ -13,11 +13,11 @@ const update_items = async (req, res) => {
         nextId: update.nextId,
       }
   
-      if (update.stateId) {
+      if (update.columnId) {
         data['columnId'] = update.columnId
       }
   
-      const query = prisma.projectState.updateMany({
+      const query = prisma.item.update({
         where: {
           id
         },
