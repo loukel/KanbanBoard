@@ -57,10 +57,14 @@ const update_columns = async (req, res) => {
 }
 
 const update_column = async (req, res) => {
+  const id = +req.params.id
   const data = req.body
 
   try {
     await prisma.column.update({
+      where: {
+        id,
+      },
       data
     })
     res.sendStatus(204)
