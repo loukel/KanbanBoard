@@ -8,10 +8,13 @@ export const KanbanBoard = () => {
   const [columns, setColumns] = useState([])
 
   // Fetch-then-render columns
-  useEffect(async () => {
-    const columns = await getAllColumns()
-    setColumns(columns)
-    setLoading(false)
+  useEffect(() => {
+    const fetchData = async () => {
+      const columns = await getAllColumns()
+      setColumns(columns)
+      setLoading(false)
+    }
+    fetchData()
   }, [])
 
   if (loading) {
@@ -19,7 +22,7 @@ export const KanbanBoard = () => {
   }
 
   return (
-    <Container>
+    <Container className='text-center p-3'>
       <Board columns={columns} />
     </Container>
   )

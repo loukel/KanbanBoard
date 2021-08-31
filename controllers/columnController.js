@@ -10,9 +10,7 @@ const get_columns = async (req, res) => {
       },
     })
     // Order columns
-    console.log(columns)
     columns = orderLinkedList(columns)
-    console.log(columns)
 
     // Order items in each column
     columns = columns.map(column => {
