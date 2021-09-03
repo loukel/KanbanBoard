@@ -41,21 +41,24 @@ const io = socket(server, {
   }
 })
 
-// the count state
-let count = 0;
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
 
-io.on('connect', function(socket) {
-  // emit to the newly connected client the existing count 
-  socket.emit('counter updated', count)
+io.on('connection', async socket => {
+  socket.on('board', async id => {
+    socket.join('board')
+    let board = {
+      loading: false,
+    }
 
-  // we listen for this event from the clients
-  socket.on('counter clicked', () => {
-    count++
-    // emit to EVERYONE the updated count
-    io.emit('counter updated', count)
+    const columns = await prisma.column.findMany({
+      include: {
+        items: true,
+      },
+    })
+    board.columns = columns
+    socket.emit('board data', board)
   })
 
-  socket.on('update board', (data) => {
-    io.emit('new board', data)
-  })
+  // io.to(`board:${id}`).emit('board data', board)
 })

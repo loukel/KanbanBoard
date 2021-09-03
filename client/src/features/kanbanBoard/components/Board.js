@@ -1,30 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import BoardColumn from './BoardColumn'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { reorder, move } from '@/utils/linkedList'
 import { Row } from 'react-bootstrap'
 import { updateColumns } from '@/services/columnApi'
 import { updateItems } from '@/services/itemApi'
-import io from "socket.io-client"
-
-let socket = null;
-function handleClick() {
-  socket.emit('counter clicked')
-}
 
 export const Board = ({ columns }) => {
   const [lists, setLists] = useState(columns)
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    // connect to the socket server
-    socket = io('ws://localhost:3001');
-
-    socket.on('new board', (data) => {
-      console.log('b updated')
-      setLists(data)
-    })
-  }, [])
 
   /**
    * Occurs where a drag operation is finished.
@@ -77,7 +61,8 @@ export const Board = ({ columns }) => {
     const res = await updateItems(data)
     if (res === 'OK') {
       setLists(listsClone)
-      socket.emit('update board', listsClone)
+      // socket.emit('update board', listsClone)
+      // socket.emit('nb', listsClone)
     }
   }
 
@@ -108,7 +93,8 @@ export const Board = ({ columns }) => {
 
     if (res === 'OK') {
       setLists(listsClone)
-      socket.emit('update board', listsClone)
+      // socket.emit('update board', listsClone)
+      // socket.emit('nb', listsClone)
     }
   }
 
@@ -121,7 +107,8 @@ export const Board = ({ columns }) => {
 
     const oldLists = [...lists]
     setLists(items)
-    socket.emit('update board', items)
+    // socket.emit('update board', items)
+    // socket.emit('nb', items)
 
     const res = await updateColumns(data)
 

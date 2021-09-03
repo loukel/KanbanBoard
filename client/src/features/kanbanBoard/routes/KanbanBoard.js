@@ -1,29 +1,35 @@
 import { useEffect, useState } from "react"
-import { getAllColumns } from "@/services/columnApi"
 import { Board } from "../components/Board"
 import { Container } from "react-bootstrap"
+import io from "socket.io-client"
 
+let socket = null
 export const KanbanBoard = () => {
-  const [loading, setLoading] = useState(true)
-  const [columns, setColumns] = useState([])
+  const [board, setBoard] = useState({
+    loading: true,
+    columns: [],
+  })
 
   // Fetch-then-render columns
   useEffect(() => {
-    const fetchData = async () => {
-      const columns = await getAllColumns()
-      setColumns(columns)
-      setLoading(false)
-    }
-    fetchData()
+    // connect to the socket server
+    socket = io('ws://localhost:3001')
+
+    socket.on("connect", () => {
+      socket.emit("board", 1)
+    })
+    socket.on('board data', data => {
+      setBoard(data)
+    })
   }, [])
 
-  if (loading) {
+  if (board.loading) {
     return <div>Loading...</div>
   }
 
   return (
     <Container className='text-center p-3'>
-      <Board columns={columns} />
+      <Board columns={board.columns} />
     </Container>
   )
 }
