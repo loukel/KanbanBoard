@@ -8,6 +8,8 @@ export const KanbanBoard = () => {
   const [board, setBoard] = useState({
     loading: true,
     columns: [],
+    updating: false,
+    lastUpdated: new Date().toISOString(),
   })
 
   // Fetch-then-render columns
@@ -19,9 +21,19 @@ export const KanbanBoard = () => {
       socket.emit("board", 1)
     })
     socket.on('board data', data => {
-      setBoard(data)
+      if (data.lastUpdated > board.lastUpdated) {
+        setBoard(data)
+      }
     })
   }, [])
+
+  const updateItems = (data, columns) => {
+    socket.emit('update items', [data, columns])
+  }
+
+  const updateColumns = (data, columns) => {
+    socket.emit('update columns', [data, columns])
+  }
 
   if (board.loading) {
     return <div>Loading...</div>
@@ -29,7 +41,7 @@ export const KanbanBoard = () => {
 
   return (
     <Container className='text-center p-3'>
-      <Board columns={board.columns} />
+      <Board columns={board.columns} updating={board.updating} updateItems={updateItems} updateColumns={updateColumns} />
     </Container>
   )
 }

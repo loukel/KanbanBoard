@@ -1,20 +1,21 @@
-import { useState } from 'react'
 import BoardColumn from './BoardColumn'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { reorder, move } from '@/utils/linkedList'
 import { Row } from 'react-bootstrap'
-import { updateColumns } from '@/services/columnApi'
-import { updateItems } from '@/services/itemApi'
+import { useEffect, useState } from 'react'
 
-export const Board = ({ columns }) => {
-  const [lists, setLists] = useState(columns)
-  const [loading, setLoading] = useState(false)
+export const Board = ({ columns: columnsData, updating, updateItems, updateColumns }) => {
+  // For client updating, this prevent dragging lag, otherwise the columnsData could just be used
+  const [columns, setColumns] = useState(columnsData)
+  useEffect(() => {
+    setColumns(columnsData)
+  }, [columnsData])
 
   /**
    * Occurs where a drag operation is finished.
    * @param result beautiful dnd object
   */
-  const onDragEnd = async (result) => {
+  const onDragEnd = (result) => {
     const { source, destination, type } = result
 
     // End function if an update isn't necessary
@@ -28,47 +29,41 @@ export const Board = ({ columns }) => {
     source.droppableId = +source.droppableId.slice(1)
     destination.droppableId = +destination.droppableId.slice(1)
 
-    setLoading(true)
     switch (type) {
       case 'ITEMS':
-        // If the item is moved in the list or cross lists
+        // If the item is moved in the list or cross columns
         source.droppableId === destination.droppableId
-        ? await moveWithinList(source, destination)
-        : await moveToList(source, destination)
+        ? moveWithinList(source, destination)
+        : moveToList(source, destination)
         break
       case 'COLUMNS':
-        await reorderColumns(source, destination)
+        reorderColumns(source, destination)
         break
       default:
         break
     }
-    setLoading(false)
   }
 
-  const moveWithinList = async (source, destination) => {
-    const [list] = lists.filter(column => column.id === source.droppableId)
+  const moveWithinList = (source, destination) => {
+    const [list] = columns.filter(column => column.id === source.droppableId)
     const [items, data] = reorder(
       list.items,
       source.index,
       destination.index
     )
 
-    const listsClone = [...lists]
+    const columnsClone = [...columns]
     list.items = items
-    const columnIndex = lists.findIndex(column => column.id === source.droppableId)
-    listsClone[columnIndex] = list
+    const columnIndex = columns.findIndex(column => column.id === source.droppableId)
+    columnsClone[columnIndex] = list
 
-    const res = await updateItems(data)
-    if (res === 'OK') {
-      setLists(listsClone)
-      // socket.emit('update board', listsClone)
-      // socket.emit('nb', listsClone)
-    }
+    updateItems(data, columnsClone)
+    setColumns(columnsClone)
   }
 
-  const moveToList = async (source, destination) => {
-    const [sourceList] = lists.filter(column => column.id === source.droppableId)
-    const [destinationList] = lists.filter(column => column.id === destination.droppableId)
+  const moveToList = (source, destination) => {
+    const [sourceList] = columns.filter(column => column.id === source.droppableId)
+    const [destinationList] = columns.filter(column => column.id === destination.droppableId)
 
     const [result, data] = move(
       sourceList.items, // Item array of source list
@@ -77,49 +72,37 @@ export const Board = ({ columns }) => {
       destination // columnId (droppableId) and index where the item is being moved to
     )
 
-    const listsClone = [...lists]
+    const columnsClone = [...columns]
 
     // Update list clone to have the new columns
     sourceList.items = result[source.droppableId]
     destinationList.items = result[destination.droppableId]
 
-    const sourceIndex = lists.findIndex(column => column.id === source.droppableId)
-    const destinationIndex = lists.findIndex(column => column.id === destination.droppableId)
+    const sourceIndex = columns.findIndex(column => column.id === source.droppableId)
+    const destinationIndex = columns.findIndex(column => column.id === destination.droppableId)
 
-    listsClone[sourceIndex] = sourceList
-    listsClone[destinationIndex] = destinationList
+    columnsClone[sourceIndex] = sourceList
+    columnsClone[destinationIndex] = destinationList
 
-    const res = await updateItems(data)
 
-    if (res === 'OK') {
-      setLists(listsClone)
-      // socket.emit('update board', listsClone)
-      // socket.emit('nb', listsClone)
-    }
+    updateItems(data, columnsClone)
+    setColumns(columnsClone)
   }
 
-  const reorderColumns = async (source, destination) => {
+  const reorderColumns = (source, destination) => {
     const [items, data] = reorder(
-      [...lists],
+      [...columns],
       source.index,
       destination.index
     )
 
-    const oldLists = [...lists]
-    setLists(items)
-    // socket.emit('update board', items)
-    // socket.emit('nb', items)
-
-    const res = await updateColumns(data)
-
-    if (res !== 'OK') {
-      setLists(oldLists)
-    }
+    updateColumns(data, items)
+    setColumns(items)
   }
 
   return (
     <Row className='flex-row ml-3 mb-3 pb-2 mr-0 px-2 board flex-nowrap align-items-start'>
-      <DragDropContext onDragEnd={onDragEnd} isDragDisabled={loading}>
+      <DragDropContext onDragEnd={onDragEnd} isDragDisabled={updating}>
         <Droppable
           droppableId={'board'}
           type={'COLUMNS'}
@@ -131,7 +114,7 @@ export const Board = ({ columns }) => {
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
-              {lists.map((column, index) =>
+              {columns.map((column, index) =>
                 <BoardColumn
                   key={column.id}
                   items={column.items}
