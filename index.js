@@ -141,4 +141,27 @@ io.on('connection', socket => {
       io.to('board').emit('board data', board)
     }
   })
+
+  socket.on('update column', async ([columnId, data]) => {
+    if (!board.updating) {
+      board.updating = true
+      board.lastUpdated = new Date()
+      let columnIndex = board.columns.findIndex(column => column.id === columnId)
+      board.columns[columnIndex] = {
+        ...board.columns[columnIndex],
+        ...data,
+      }
+      io.to('board').emit('board data', board)
+
+      await prisma.column.update({
+        where: {
+          id: columnId,
+        },
+        data
+      })
+      board.updating = false
+      board.lastUpdated = new Date()
+      io.to('board').emit('board data', board)
+    }
+  })
 })

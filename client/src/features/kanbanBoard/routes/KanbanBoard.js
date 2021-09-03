@@ -35,13 +35,23 @@ export const KanbanBoard = () => {
     socket.emit('update columns', [data, columns])
   }
 
+  const updateColumn = (columnId, data) => {
+    socket.emit('update column', [columnId, data])
+  }
+
   if (board.loading) {
     return <div>Loading...</div>
   }
 
   return (
     <Container className='text-center p-3'>
-      <Board columns={board.columns} updating={board.updating} updateItems={updateItems} updateColumns={updateColumns} />
+      <Board 
+        columns={board.columns} 
+        updating={board.updating} 
+        updateItems={updateItems} 
+        updateColumns={updateColumns}
+        updateColumn={updateColumn}
+      />
     </Container>
   )
 }

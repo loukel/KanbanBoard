@@ -3,12 +3,15 @@ import { Card } from 'react-bootstrap'
 import TextareaAutosize from 'react-textarea-autosize'
 import ColumnOptions from './ColumnOptions'
 import { Draggable } from 'react-beautiful-dnd'
-import { updateColumn } from '@/services/columnApi'
 import ColumnBody from './ColumnBody'
 
-const BoardColumn = ({ items, heading, id, deleteColumn, index: columnIndex }) => {
+const BoardColumn = ({ items, heading, id, index: columnIndex, updateColumn, deleteColumn }) => {
   const [label, setLabel] = useState(heading)
   const [edit, setEdit] = useState(false)
+
+  useEffect(() => {
+    setLabel(heading)
+  }, [heading])
 
   useEffect(() => {
     if (edit) {
@@ -24,13 +27,13 @@ const BoardColumn = ({ items, heading, id, deleteColumn, index: columnIndex }) =
     }
   }, [edit])
 
-  const updateLabel = async () => {
+  const updateHeading = () => {
     setEdit(false)
 
     const data = {
       name: label
     }
-    await updateColumn(id, data)
+    updateColumn(id, data)
   }
 
   return (
@@ -44,17 +47,17 @@ const BoardColumn = ({ items, heading, id, deleteColumn, index: columnIndex }) =
               ? <TextareaAutosize
                   type='textarea'
                   value={label}
-                  onChange={(event) => { setLabel(event.target.value) }}
                   className='label h5 m-0 pl-3 pr-3 py-0'
-                  onBlur={updateLabel}
-                  onKeyPress={(e) => e.key === 'Enter' && updateLabel()}
+                  onChange={e => setLabel(e.target.value)}
+                  onBlur={() => updateHeading()}
+                  onKeyPress={e => e.key === 'Enter' && updateHeading()}
                   id={`header-${id}`}
                 />
-              : <div className='label h5 m-0 pl-3 pr-3'>{label}</div>
+              : <div className='label h5 m-0 pl-3 pr-3'>{heading}</div>
             }
             <ColumnOptions
               deleteColumn={() => deleteColumn(id)}
-              label={label}
+              label={heading}
               empty={items.length === 0}
               edit={() => setEdit(true)}
             />
