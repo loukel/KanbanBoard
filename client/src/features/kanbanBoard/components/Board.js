@@ -3,8 +3,9 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import { reorder, move } from '@/utils/linkedList'
 import { Row } from 'react-bootstrap'
 import { useEffect, useState } from 'react'
+import { updateColumns, updateItems } from '../socket'
 
-export const Board = ({ columns: columnsData, updating, updateItems, updateColumns, updateColumn }) => {
+export const Board = ({ columns: columnsData, updating }) => {
   // For client updating, this prevent dragging lag, otherwise the columnsData could just be used
   const [columns, setColumns] = useState(columnsData)
   useEffect(() => {
@@ -121,7 +122,6 @@ export const Board = ({ columns: columnsData, updating, updateItems, updateColum
                   id={column.id}
                   heading={column.name}
                   index={index}
-                  updateColumn={updateColumn}
                 />
               )}
               {provided.placeholder}
