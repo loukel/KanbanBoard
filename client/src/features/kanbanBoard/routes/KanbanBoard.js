@@ -8,15 +8,15 @@ export const KanbanBoard = () => {
     loading: true,
     columns: [],
     updating: false,
-    lastUpdated: new Date().toISOString(),
+    lastUpdated: null,
   })
 
   // Fetch-then-render columns
-  useSocket((socket) => {
-    socket.emit("board", 1)
+  useSocket(socket => {
+    // socket.emit("board:init")
 
     socket.on('board data', data => {
-      if (data.lastUpdated > board.lastUpdated) {
+      if (board.lastUpdated === null || data.lastUpdated > board.lastUpdated) {
         setBoard(data)
       }
     })
