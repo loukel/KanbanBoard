@@ -13,15 +13,13 @@ export const KanbanBoard = () => {
 
   // Fetch-then-render columns
   useSocket(socket => {
-    // socket.emit("board:init")
-
     socket.on('board data', data => {
       if (board.lastUpdated === null || data.lastUpdated > board.lastUpdated) {
         setBoard(data)
       }
     })
   })
-
+  
   if (board.loading) {
     return <div>Loading...</div>
   }
