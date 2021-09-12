@@ -11,7 +11,6 @@ let board = {
 
 module.exports = (io) => {
   const initBoard = async function (socket) {
-    // const socket = this
     socket.join('board')
     if (board.loading) {
       let columns = await prisma.column.findMany({
@@ -35,12 +34,13 @@ module.exports = (io) => {
   }
 
   const updateColumns = async function ([dataUpdate, columns]) {
+    const socket = this
     if (!board.updating) {
       board.updating = true
       board.lastUpdated = new Date()
       board.columns = columns
-      io.to('board').emit('board data', board)
-
+      socket.to('board').emit('board data', board)
+  
       let queries = []
       dataUpdate.forEach(update => {
         const id = update.id
@@ -66,6 +66,7 @@ module.exports = (io) => {
   }
 
   const updateColumn = async function ([columnId, data]) {
+    const socket = this
     if (!board.updating) {
       board.updating = true
       board.lastUpdated = new Date()
@@ -74,7 +75,7 @@ module.exports = (io) => {
         ...board.columns[columnIndex],
         ...data,
       }
-      io.to('board').emit('board data', board)
+      socket.to('board').emit('board data', board)
 
       await prisma.column.update({
         where: {
@@ -89,11 +90,12 @@ module.exports = (io) => {
   }
 
   const updateItems = async function ([dataUpdate, columns]) {
+    const socket = this
     if (!board.updating) {
       board.updating = true
       board.lastUpdated = new Date()
       board.columns = columns
-      io.to('board').emit('board data', board)
+      socket.to('board').emit('board data', board)
 
       let queries = []
       dataUpdate.forEach(update => {

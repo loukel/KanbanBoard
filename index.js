@@ -45,7 +45,6 @@ const { initBoard, updateColumns, updateItems, updateColumn } = require("./socke
 const onConnection = socket => {
   initBoard(socket)
 
-  socket.on('board:init', initBoard)
   socket.on('board:columns', updateColumns)
   socket.on('board:column', updateColumn)
   socket.on('board:items', updateItems)

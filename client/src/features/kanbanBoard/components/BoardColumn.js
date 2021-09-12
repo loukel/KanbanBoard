@@ -4,7 +4,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 import ColumnOptions from './ColumnOptions'
 import { Draggable } from 'react-beautiful-dnd'
 import ColumnBody from './ColumnBody'
-import { updateColumn } from '../socket'
+import { updateColumn } from '@/services/boardSockets'
 
 const BoardColumn = ({ items, heading, id, index: columnIndex, deleteColumn }) => {
   const [label, setLabel] = useState(heading)

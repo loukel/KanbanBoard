@@ -1,16 +1,11 @@
 import BoardColumn from './BoardColumn'
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'
-import { reorder, move } from '@/utils/linkedList'
 import { Row } from 'react-bootstrap'
-import { useEffect, useState } from 'react'
-import { updateColumns, updateItems } from '../socket'
+import { useDispatch } from 'react-redux'
+import { moveToListAction, moveWithinListAction, reorderColumnsAction } from '@/actions/boardActions'
 
-export const Board = ({ columns: columnsData, updating }) => {
-  // For client updating, this prevent dragging lag, otherwise the columnsData could just be used
-  const [columns, setColumns] = useState(columnsData)
-  useEffect(() => {
-    setColumns(columnsData)
-  }, [columnsData])
+export const Board = ({ columns, updating }) => {
+  const dispatch = useDispatch()
 
   /**
    * Occurs where a drag operation is finished.
@@ -33,72 +28,16 @@ export const Board = ({ columns: columnsData, updating }) => {
     switch (type) {
       case 'ITEMS':
         // If the item is moved in the list or cross columns
-        source.droppableId === destination.droppableId
-        ? moveWithinList(source, destination)
-        : moveToList(source, destination)
-        break
+        if (source.droppableId === destination.droppableId) {
+          return dispatch(moveWithinListAction(source, destination))
+        } else {
+          return dispatch(moveToListAction(source, destination))
+        }
       case 'COLUMNS':
-        reorderColumns(source, destination)
-        break
+        return dispatch(reorderColumnsAction(source, destination))
       default:
-        break
+        return
     }
-  }
-
-  const moveWithinList = (source, destination) => {
-    const [list] = columns.filter(column => column.id === source.droppableId)
-    const [items, data] = reorder(
-      list.items,
-      source.index,
-      destination.index
-    )
-
-    const columnsClone = [...columns]
-    list.items = items
-    const columnIndex = columns.findIndex(column => column.id === source.droppableId)
-    columnsClone[columnIndex] = list
-
-    updateItems(data, columnsClone)
-    setColumns(columnsClone)
-  }
-
-  const moveToList = (source, destination) => {
-    const [sourceList] = columns.filter(column => column.id === source.droppableId)
-    const [destinationList] = columns.filter(column => column.id === destination.droppableId)
-
-    const [result, data] = move(
-      sourceList.items, // Item array of source list
-      destinationList.items, // Item array of destination list
-      source, // columnId (droppableId) and index of item being moved
-      destination // columnId (droppableId) and index where the item is being moved to
-    )
-
-    const columnsClone = [...columns]
-
-    // Update list clone to have the new columns
-    sourceList.items = result[source.droppableId]
-    destinationList.items = result[destination.droppableId]
-
-    const sourceIndex = columns.findIndex(column => column.id === source.droppableId)
-    const destinationIndex = columns.findIndex(column => column.id === destination.droppableId)
-
-    columnsClone[sourceIndex] = sourceList
-    columnsClone[destinationIndex] = destinationList
-
-
-    updateItems(data, columnsClone)
-    setColumns(columnsClone)
-  }
-
-  const reorderColumns = (source, destination) => {
-    const [items, data] = reorder(
-      [...columns],
-      source.index,
-      destination.index
-    )
-
-    updateColumns(data, items)
-    setColumns(items)
   }
 
   return (

@@ -1,4 +1,10 @@
-import { socket } from "@/hooks/useSocket"
+import { socket } from "@/lib/socket"
+
+export const boardListener = (callback) => {
+  socket.on('board data', board => {
+    return callback(board)
+  })
+}
 
 export const updateItems = (data, columns) => {
   socket.emit('board:items', [data, columns])

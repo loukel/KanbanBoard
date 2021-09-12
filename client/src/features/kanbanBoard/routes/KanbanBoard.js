@@ -1,25 +1,17 @@
-import { useState } from "react"
 import { Board } from "../components/Board"
 import { Container } from "react-bootstrap"
-import { useSocket } from "@/hooks/useSocket"
+import { useSelector, useDispatch } from 'react-redux'
+import { initBoardAction } from "@/actions/boardActions"
+import { useEffect } from "react"
 
 export const KanbanBoard = () => {
-  const [board, setBoard] = useState({
-    loading: true,
-    columns: [],
-    updating: false,
-    lastUpdated: null,
-  })
+  const board = useSelector(state => state.board)
+  const dispatch = useDispatch()
 
-  // Fetch-then-render columns
-  useSocket(socket => {
-    socket.on('board data', data => {
-      if (board.lastUpdated === null || data.lastUpdated > board.lastUpdated) {
-        setBoard(data)
-      }
-    })
-  })
-  
+  useEffect(() => {
+    dispatch(initBoardAction())
+  }, [])
+
   if (board.loading) {
     return <div>Loading...</div>
   }
