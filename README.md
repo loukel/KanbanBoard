@@ -1,4 +1,4 @@
-# KanbanBoard
+# Kanban Board
 
 View different branches for different technology implementations of the kanban board.
 
